@@ -18,6 +18,10 @@ const guildSchema = new mongoose.Schema(
       type: String,
       default: "b",
     },
+    aiSupport: {
+      enabled: { type: Boolean, default: true },
+      model: { type: String, default: "gemini-3.8-flash" },
+    },
     blacklistedUsers: [
       {
         userId: String,
@@ -163,6 +167,11 @@ const ticketSchema = new mongoose.Schema(
     closedBy: String,
     closedAt: Date,
     closeReason: String,
+    aiStats: {
+      messages: { type: Number, default: 0 },
+      lastInteractionAt: Date,
+      escalated: { type: Boolean, default: false },
+    },
     rating: {
       stars: { type: Number, min: 1, max: 5 },
       feedback: String,
