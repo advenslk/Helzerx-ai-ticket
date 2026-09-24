@@ -20,54 +20,62 @@ export default {
 
     const ticket = await client.db.getTicketByChannel(message.channel.id);
     if (!ticket || ticket.status !== "open") return;
+    if (ticket.aiStats?.humanTakeover) return;
 
     const panel = await client.db.getPanel(ticket.panelId);
-    const category = panel?.categories?.find((c) => c.categoryId === ticket.categoryId);
-    if (!category) return;
+    const category = panel?.categories?.find((item) => item.categoryId === ticket.categoryId);
+    if (!category || category.settings?.aiEnabled === false) return;
 
-    const key = message.channel.id;
     const now = Date.now();
-    if (cooldowns.has(key) && now - cooldowns.get(key) < config.ai.cooldownMs) return;
+    const last = cooldowns.get(message.channel.id) || 0;
+    if (now - last < config.ai.cooldownMs) return;
 
-    const recent = await message.channel.messages.fetch({ limit: Math.min(config.ai.historyLimit, 25) });
+    const recent = await message.channel.messages.fetch({
+      limit: Math.min(config.ai.historyLimit, 25),
+    });
     const ordered = [...recent.values()].reverse();
 
     const staffRecentlyActive = ordered.some(
-      (m) =>
-        m.id !== message.id &&
-        !m.author.bot &&
-        isStaffMessage(m, category) &&
-        now - m.createdTimestamp < config.ai.staffSilenceMs,
+      (item) =>
+        item.id !== message.id &&
+        !item.author.bot &&
+        isStaffMessage(item, category) &&
+        now - item.createdTimestamp < config.ai.staffSilenceMs,
     );
     if (staffRecentlyActive) return;
 
-    cooldowns.set(key, now);
+    cooldowns.set(message.channel.id, now);
     await message.channel.sendTyping();
 
     try {
-      const history = formatHistory(ordered);
-      const reply = await generateSupportReply({
+      const result = await generateSupportReply({
         guildName: message.guild.name,
         categoryName: category.name,
         customerName: message.member?.displayName || message.author.username,
-        history,
+        history: formatHistory(ordered),
         latestMessage: message.content,
         model: category.settings?.aiModel || guildConfig?.aiSupport?.model || config.ai.model,
+        client,
+        message,
+        ticket,
+        category,
       });
 
-      if (!reply) return;
+      if (!result.text) return;
 
       await message.channel.send({
-        content: reply.slice(0, 1900),
+        content: result.text.slice(0, 1900),
         allowedMentions: { parse: [] },
       });
 
       await client.db.updateTicket(ticket.ticketId, {
         "aiStats.messages": (ticket.aiStats?.messages || 0) + 1,
+        "aiStats.toolCalls": (ticket.aiStats?.toolCalls || 0) + result.toolCalls,
         "aiStats.lastInteractionAt": new Date(),
       });
     } catch (error) {
-      logger.error("AI Support", `Failed to respond in ticket ${ticket.ticketId}`, error);
+      logger.error("AI Support", "Failed to process ticket " + ticket.ticketId, error);
+      cooldowns.delete(message.channel.id);
     }
   },
 };
