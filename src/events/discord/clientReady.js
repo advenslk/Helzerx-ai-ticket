@@ -18,6 +18,10 @@ export default {
     logger.success("Bot", `Logged in as ${client.user.tag}`);
     logger.info("Bot", `Serving ${client.guilds.cache.size} guilds`);
 
+    for (const guild of client.guilds.cache.values()) {
+      client.inviteTracker.syncGuild(guild).catch(() => {});
+    }
+
     try {
       const slashCommandsData =
         client.commandHandler.getSlashCommandsData();
