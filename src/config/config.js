@@ -24,18 +24,16 @@ export const config = {
     apiToken: process.env.VPS_BOT_API_TOKEN || "",
     timeoutMs: Number(process.env.VPS_BOT_TIMEOUT_MS || 15000),
   },
-  invitePlans: [
-    {
-      id: "3-invite-vps",
-      name: "3 Invite VPS",
-      requiredInvites: 3,
-      durationDays: 7,
-      cpuCores: 4,
-      ramMb: 12 * 1024,
-      diskGb: 20,
-      defaultOs: "ubuntu-24.04",
-    },
-  ],
+  invitePlans: [{
+    id: "3-invite-vps",
+    name: "3 Invite VPS",
+    requiredInvites: 3,
+    durationDays: 7,
+    cpuCores: 4,
+    ramMb: 12 * 1024,
+    diskGb: 20,
+    defaultOs: "ubuntu-24.04",
+  }],
   support: {
     feedbackChannelId: process.env.AI_FEEDBACK_CHANNEL_ID || "1552629200714866718",
   },
