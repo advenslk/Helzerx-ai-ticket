@@ -38,6 +38,7 @@ export class VPSBotClient {
   nodes() { return this.request("/v1/agent/nodes"); }
   operatingSystems() { return this.request("/v1/agent/operating-systems"); }
   createVps(input) { return this.request("/v1/agent/vps", { method: "POST", body: JSON.stringify(input) }); }
+  listForUser(userId) { return this.request("/v1/agent/users/" + encodeURIComponent(userId) + "/vps"); }
   getVps(vpsId) { return this.request("/v1/agent/vps/" + encodeURIComponent(vpsId)); }
   action(vpsId, action) { return this.request("/v1/agent/vps/" + encodeURIComponent(vpsId) + "/action", { method: "POST", body: JSON.stringify({ action }) }); }
   stats(vpsId) { return this.request("/v1/agent/vps/" + encodeURIComponent(vpsId) + "/stats"); }
