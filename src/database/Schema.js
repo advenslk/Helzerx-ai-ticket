@@ -31,6 +31,10 @@ const guildSchema = new mongoose.Schema(
       },
     ],
     staffRoles: [String],
+    aiSupport: {
+      enabled: { type: Boolean, default: true },
+      model: { type: String, default: "gemini-3.8-flash" },
+    },
   },
   { timestamps: true }
 );
@@ -60,6 +64,7 @@ const categorySchema = new mongoose.Schema({
     dmUserOnOpen: { type: Boolean, default: true },
     dmUserOnClose: { type: Boolean, default: true },
     welcomeMessage: String,
+    aiModel: String,
   },
   isActive: {
     type: Boolean,
