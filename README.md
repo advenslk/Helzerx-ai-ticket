@@ -1,178 +1,69 @@
-![Header](https://raw.githubusercontent.com/OpenUwU/.github/refs/heads/main/header.jpg)
+# HelzerX Studio — AI Ticket Bot
 
-<p align="center">
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black" alt="JavaScript"/>
-  <img src="https://img.shields.io/badge/discord.js-5865F2.svg?style=for-the-badge&logo=discorddotjs&logoColor=white" alt="discord.js"/>
-  <img src="https://img.shields.io/badge/Node.js-339933.svg?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js"/>
-  <img src="https://img.shields.io/badge/MongoDB-13aa52.svg?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB"/>
-</p>
+A production-focused Discord ticket system for **HelzerX Studio**, now with Gemini-powered support responses.
 
-<p align="center">
-  
-  <img src="https://img.shields.io/github/stars/OpenUwU/TicketBot?style=for-the-badge" alt="Stars"/>
-  <img src="https://img.shields.io/github/forks/OpenUwU/TicketBot?style=for-the-badge" alt="Forks"/>
-  <img src="https://img.shields.io/github/issues/OpenUwU/TicketBot?style=for-the-badge" alt="Issues"/>
-</p>
+## Features
+- Discord Components V2 ticket panels
+- MongoDB ticket persistence
+- Ticket lifecycle: create, close, reopen, delete
+- User add/remove controls
+- Staff roles and category-specific permissions
+- Ticket ratings and transcripts
+- **Gemini AI support inside open tickets**
+- Recent ticket history is supplied to Gemini for contextual replies
+- AI pauses when a configured support-role member has recently replied
+- AI avoids inventing prices, policies, account data, refunds, credentials, or staff-only actions
+- AI escalates requests that require human staff
+- Secrets are kept in environment variables
 
-# 🎫 Ticket Bot
+## Gemini setup
 
-**Ticket Bot** is a powerful and versatile Discord ticket management system built with Discord.js, featuring advanced ticket handling capabilities and a modular command architecture. Designed for efficient support ticket management and comprehensive server administration, Ticket Bot streamlines communication between server moderators and members.
+HelzerX Studio uses Google's official `@google/genai` SDK. The default model is `gemini-3.8-flash`.
 
-## ✨ Key Features
-
-### 🎫 Ticket Management
-- **Create Tickets:** Members can easily create support tickets with customizable categories
-- **Ticket Lifecycle:** Complete ticket workflow from creation to closure and archival
-- **Reopen Tickets:** Closed tickets can be reopened if needed with full history preservation
-- **Ticket Ratings:** Rate ticket quality and handler performance with built-in rating system
-
-### 🛠️ Customization
-- **Custom Panel Settings:** Configure ticket creation panels with custom messages and buttons
-- **Role-Based Access:** Assign support roles with specific permissions and capabilities
-- **Emoji Customization:** Beautiful custom emojis for enhanced visual appeal
-- **Server Configuration:** Granular control over ticket behavior and settings
-
-### 📊 Admin Features
-- **Panel Management:** Create and manage multiple ticket panels
-- **Settings Dashboard:** Configure bot behavior from a dedicated settings command
-- **Ticket Logs:** Complete audit trail of all ticket interactions
-- **User Management:** Remove and manage users within ticket channels
-
-### 🚀 Performance
-- **Fast Processing:** Optimized for rapid ticket creation and management
-- **Database Efficiency:** MongoDB integration for reliable data storage
-- **Scalable Architecture:** Handles multiple concurrent tickets seamlessly
-- **Component V2 Support:** Modern Discord UI with interactive components
-
-## 🛠️ Technologies Used
-
-- **[Discord.js](https://discord.js.org/)** - Discord API library
-- **[MongoDB](https://www.mongodb.com/)** - Document database for data persistence
-- **[Mongoose](https://mongoosejs.com/)** - MongoDB object modeling
-- **[discord-html-transcripts](https://github.com/ItzDerock/discord-html-transcripts)** - Ticket transcript generation
-
-## 📦 Setup Instructions
-
-### Prerequisites
-- Node.js v16.9.0 or higher
-- A Discord Bot Token ([Get one here](https://discord.com/developers/applications))
-- MongoDB database (local or cloud instance)
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/OpenUwU/ticket-bot.git
-   cd ticket-bot
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables:**
-   
-   Create a `.env` file in the project root:
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Edit `.env` with your configuration:
-   ```env
-   # Required
-   token=your_bot_token_here
-   clientID=your_client_id_here
-   
-   # Database
-   mongodbURL=your_mongodb_connection_string
-   ```
-
-4. **Start the bot:**
-   
-   For production:
-   ```bash
-   npm start
-   ```
-   
-   For development (with hot-reloading):
-   ```bash
-   npm run dev
-   ```
-
-## 📝 Configuration Guide
-
-### Environment Variables
-
-| Variable | Description | Required | Default |
-|----------|-------------|----------|---------|
-| `token` | Your Discord bot token | ✅ Yes | - |
-| `clientID` | Discord application client ID | ✅ Yes | - |
-| `mongodbURL` | MongoDB connection string | ✅ Yes | - |
-
-See `.env.example` for the complete list of configuration options.
-
-## 🎯 Commands
-
-### Ticket Management Commands
-- `add <user>` - Add a user to the current ticket
-- `close` - Close the current ticket
-- `delete` - Delete the closed ticket
-- `remove <user>` - Remove a user from the ticket
-- `reopen` - Reopen a closed ticket
-
-### Admin Commands
-- `panel` - Create and manage ticket creation panels
-- `settings` - Configure bot settings and behavior
-- `help` - Display help information with all available commands
-
-## 📄 Example .env File
-
-Here's a complete example of a configured `.env` file:
+Create a `.env` file:
 
 ```env
-# ====================================
-# DISCORD BOT CONFIGURATION
-# ====================================
-token=your_bot_token_here
-clientID=your_client_id_here
+DISCORD_TOKEN=your_discord_bot_token
+DISCORD_CLIENT_ID=your_discord_client_id
+MONGODB_URI=mongodb://localhost:27017/helzerx-studio-tickets
 
-# ====================================
-# DATABASE CONFIGURATION
-# ====================================
-mongodbURL=mongodb+srv://username:password@cluster.mongodb.net/ticketbot
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-3.8-flash
+AI_ENABLED=true
+AI_COOLDOWN_MS=2500
+AI_HISTORY_LIMIT=12
+AI_STAFF_SILENCE_MS=300000
 
-# ====================================
-# ENVIRONMENT
-# ====================================
 NODE_ENV=production
+DEBUG=false
 ```
 
-> **⚠️ Security Warning:** Never commit your `.env` file to version control! Always keep your tokens and connection strings private.
+Install and run:
+```bash
+npm install
+npm run test
+npm start
+```
 
-## 🚨 Important Notes
+## How the AI works
+1. Confirms the channel belongs to an open ticket.
+2. Loads the ticket category and configured support roles.
+3. Reads a small recent window of the ticket conversation.
+4. Avoids answering while a support-role member has recently replied.
+5. Sends the conversation and latest customer message to Gemini.
+6. Posts the response back into the ticket.
+7. Records basic AI interaction statistics in MongoDB.
 
-- **Under Development:** This project is actively being developed. Expect potential bugs and breaking changes.
-- **Report Issues:** Found a bug? Please report it on the [GitHub Issues](https://github.com/OpenUwU/ticket-bot/issues) page.
-- **Public Hosting:** Hosting a public instance without permission is prohibited.
-- **Credits:** Do not remove or modify the project credits.
+The AI is designed to sound natural and helpful, but it does not pretend to be a human if asked directly.
 
-## 🤝 Contributing
+## Safety
+Never place Discord tokens, Gemini API keys, MongoDB passwords, payment credentials, or private keys in source code. Rotate any credential that has previously been committed to a repository.
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+## Development
+```bash
+npm run test
+npm run test:ai
+npm run format
+```
 
-## 👥 Credits
-
-**Ticket Bot** is maintained by [The OpenUwU Project](https://github.com/OpenUwU) and created by **bre4d777**.
-
----
-
-<p align="center">
-  Made with ❤️ by <a href="https://github.com/bre4d777">bre4d777</a>
-</p>
-
-<p align="center">
-  <a href="https://discord.gg/aerox">Support Server</a> •
-  <a href="https://github.com/OpenUwU/ticket-bot/issues">Report Bug</a> •
-  <a href="https://github.com/OpenUwU/ticket-bot/issues">Request Feature</a>
-</p>
+Built for **HelzerX Studio**.
