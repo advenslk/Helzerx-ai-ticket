@@ -150,11 +150,7 @@ export function createToolExecutor({ client, message, ticket, category }) {
     async get_user_vps(args) {
       if (String(args.user_id) !== String(userId)) throw new Error("Customer identity mismatch.");
       if (!vps.enabled) throw new Error("VPS bot integration is not configured.");
-      const response = await fetch(vps.baseUrl + "/v1/agent/users/" + encodeURIComponent(userId) + "/vps, {
-        headers: { Authorization: "Bearer " + vps.token },
-      });
-      if (!response.ok) throw new Error("Could not retrieve VPS list.");
-      return response.json();
+      return vps.listForUser(userId);
     },
 
     async get_vps_status(args) { return { vps: cleanVps(await ownedVps(args.vps_id)) }; },
