@@ -1,12 +1,14 @@
 {
-  "name": "ticket-bot",
-  "version": "2.0.0",
-  "description": "A versatile Discord.js bot with modular command architecture",
+  "name": "helzerx-studio-ai-ticket",
+  "version": "3.0.0",
+  "description": "HelzerX Studio AI-powered Discord ticket support system",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "format": "prettier --write \"src/**/*.js\""
+    "format": "prettier --write \"src/**/*.js\"",
+    "test": "node --test",
+    "test:ai": "node --test tests/ai-support.test.js"
   },
   "imports": {
     "#commands/*": "./src/commands/*.js",
@@ -24,7 +26,7 @@
     "bot",
     "discord.js"
   ],
-  "author": "Bre4d777",
+  "author": "HelzerX Studio",
   "license": "MIT",
   "dependencies": {
     "discord-html-transcripts": "^3.2.0",
@@ -32,7 +34,8 @@
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
     "mongoose": "^9.0.2",
-    "prettier": "^3.7.4"
+    "prettier": "^3.7.4",
+    "@google/genai": "^1.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
