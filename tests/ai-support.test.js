@@ -24,6 +24,6 @@ test("buildSupportPrompt prevents invented business information", () => {
     history: [],
     latestMessage: "Give me a refund",
   });
-  assert.match(prompt, /Never invent prices, policies, account details, uptime guarantees, refunds/);
-  assert.match(prompt, /staff member needs to take over/);
+  assert.match(prompt, /Never invent prices, policies, refunds, credentials/);
+  assert.match(prompt, /Use human staff for payment decisions/);
 });
