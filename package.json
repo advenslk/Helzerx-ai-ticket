@@ -19,7 +19,8 @@
     "#events/*": "./src/events/*.js",
     "#handlers/*": "./src/structures/handlers/*.js",
     "#classes/*": "./src/structures/classes/*.js",
-    "#db/*": "./src/database/*.js"
+    "#db/*": "./src/database/*.js",
+    "#ai/*": "./src/ai/*.js"
   },
   "keywords": [
     "discord",
