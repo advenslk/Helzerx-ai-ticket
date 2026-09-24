@@ -1,6 +1,6 @@
 {
   "name": "helzerx-studio-ai-ticket",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "HelzerX Studio AI-powered Discord ticket support system",
   "type": "module",
   "main": "src/index.js",
@@ -8,7 +8,8 @@
     "start": "node src/index.js",
     "format": "prettier --write \"src/**/*.js\"",
     "test": "node --test",
-    "test:ai": "node --test tests/ai-support.test.js"
+    "test:ai": "node --test tests/ai-support.test.js tests/ai-agent.test.js",
+    "test:syntax": "node --check src/index.js"
   },
   "imports": {
     "#commands/*": "./src/commands/*.js",
