@@ -18,10 +18,6 @@ const guildSchema = new mongoose.Schema(
       type: String,
       default: "b",
     },
-    aiSupport: {
-      enabled: { type: Boolean, default: true },
-      model: { type: String, default: "gemini-3.8-flash" },
-    },
     blacklistedUsers: [
       {
         userId: String,
