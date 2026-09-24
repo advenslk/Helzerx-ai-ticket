@@ -18,7 +18,8 @@ import { DatabaseManager } from "#db/Manager";
 import { CommandHandler } from "#handlers/CommandHandler";
 import { EventLoader } from "#handlers/EventLoader";
 import { logger } from "#utils/logger";
-import { createUtils } from "#utils/utils"
+import { createUtils } from "#utils/utils";
+import { InviteTracker } from "#services/inviteTracker";
 
 
 
@@ -54,7 +55,8 @@ export class Bot extends Client {
     this.commands = new Collection();
     this.logger = logger;
     this.config = config;
-    this.db = new DatabaseManager(this)
+    this.db = new DatabaseManager(this);
+    this.inviteTracker = new InviteTracker(this);
     this.utils = createUtils(this);
     this.commandHandler = new CommandHandler(this);
     this.eventHandler = new EventLoader(this);
