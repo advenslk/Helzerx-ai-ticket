@@ -24,11 +24,11 @@ export class TicketUI {
     const container = new ContainerBuilder();
     
     const statusText = ticket.status === "open" ? "Open" : "Closed";
-    const welcomeMsg = category.settings?.welcomeMessage || "Welcome! Support will be with you shortly.";
+    const welcomeMsg = category.settings?.welcomeMessage || "Welcome to **HelzerX Studio Support**. A support specialist will be with you shortly.";
     
     container.addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `## ${emoji.ticket} ${category.name}\n\n${welcomeMsg}\n\n**Status:** ${statusText}`
+        `## ${emoji.ticket} HelzerX Studio • ${category.name}\n\n${welcomeMsg}\n\n**Status:** ${statusText}`
       )
     );
     
