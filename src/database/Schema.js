@@ -1,57 +1,30 @@
-/**
- * Copyright (c) 2025 openUwU
- * Code by bre4d777
- * MIT License
- */
-
 import mongoose from "mongoose";
 
-const guildSchema = new mongoose.Schema(
-  {
-    guildId: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-    },
-    prefix: {
-      type: String,
-      default: "b",
-    },
-    blacklistedUsers: [
-      {
-        userId: String,
-        reason: String,
-        blacklistedAt: { type: Date, default: Date.now },
-        blacklistedBy: String,
-      },
-    ],
-    staffRoles: [String],
-    aiSupport: {
-      enabled: { type: Boolean, default: true },
-      model: { type: String, default: "gemini-3.8-flash" },
-    },
+const guildSchema = new mongoose.Schema({
+  guildId: { type: String, required: true, unique: true, index: true },
+  prefix: { type: String, default: "." },
+  blacklistedUsers: [{
+    userId: String,
+    reason: String,
+    blacklistedAt: { type: Date, default: Date.now },
+    blacklistedBy: String,
+  }],
+  staffRoles: [String],
+  aiSupport: {
+    enabled: { type: Boolean, default: true },
+    model: { type: String, default: "gemini-3.8-flash" },
+    autoActions: { type: Boolean, default: true },
   },
-  { timestamps: true }
-);
+}, { timestamps: true });
 
 const categorySchema = new mongoose.Schema({
-  categoryId: {
-    type: String,
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
+  categoryId: { type: String, required: true },
+  name: { type: String, required: true },
   description: String,
   emoji: String,
   supportRoles: [String],
   ticketChannelCategory: String,
-  namingFormat: {
-    type: String,
-    default: "ticket-{username}-{number}",
-  },
+  namingFormat: { type: String, default: "ticket-{username}-{number}" },
   settings: {
     pingUser: { type: Boolean, default: true },
     pingRole: { type: Boolean, default: false },
@@ -61,127 +34,88 @@ const categorySchema = new mongoose.Schema({
     dmUserOnClose: { type: Boolean, default: true },
     welcomeMessage: String,
     aiModel: String,
+    aiEnabled: { type: Boolean, default: true },
   },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
+  isActive: { type: Boolean, default: true },
 });
 
-const panelSchema = new mongoose.Schema(
-  {
-    panelId: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-    },
-    guildId: {
-      type: String,
-      required: true,
-      index: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    channelId: String,
-    panelMessage: {
-      title: { type: String, default: "Ticket Panel" },
-      description: { type: String, default: "Select a category below to create a ticket" }
-    },
-    messageId: String,
-    categories: [categorySchema],
-    selectMenuConfig: {
-      placeholder: {
-        type: String,
-        default: "Select a ticket category",
-      },
-      minValues: { type: Number, default: 1 },
-      maxValues: { type: Number, default: 1 },
-    },
-    logs: {
-      createChannel: String,
-      closeChannel: String,
-      deleteChannel: String,
-      userAddChannel: String,
-      userRemoveChannel: String,
-      ratingChannel: String,
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
+const panelSchema = new mongoose.Schema({
+  panelId: { type: String, required: true, unique: true, index: true },
+  guildId: { type: String, required: true, index: true },
+  name: { type: String, required: true },
+  channelId: String,
+  panelMessage: {
+    title: { type: String, default: "Ticket Panel" },
+    description: { type: String, default: "Select a category below to create a ticket" },
   },
-  { timestamps: true }
-);
-
-const ticketSchema = new mongoose.Schema(
-  {
-    ticketId: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-    },
-    guildId: {
-      type: String,
-      required: true,
-      index: true,
-    },
-    panelId: {
-      type: String,
-      required: true,
-      index: true,
-    },
-    categoryId: {
-      type: String,
-      required: true,
-    },
-    channelId: String,
-    userId: {
-      type: String,
-      required: true,
-      index: true,
-    },
-    status: {
-      type: String,
-      enum: ["open", "closed"],
-      default: "open",
-      index: true,
-    },
-    addedUsers: [
-      {
-        userId: String,
-        addedBy: String,
-        addedAt: { type: Date, default: Date.now },
-      },
-    ],
-    removedUsers: [
-      {
-        userId: String,
-        removedBy: String,
-        removedAt: { type: Date, default: Date.now },
-      },
-    ],
-    controlMessageId: String,
-    closedBy: String,
-    closedAt: Date,
-    closeReason: String,
-    aiStats: {
-      messages: { type: Number, default: 0 },
-      lastInteractionAt: Date,
-      escalated: { type: Boolean, default: false },
-    },
-    rating: {
-      stars: { type: Number, min: 1, max: 5 },
-      feedback: String,
-      ratedAt: Date,
-    },
+  messageId: String,
+  categories: [categorySchema],
+  selectMenuConfig: {
+    placeholder: { type: String, default: "Select a ticket category" },
+    minValues: { type: Number, default: 1 },
+    maxValues: { type: Number, default: 1 },
   },
-  { timestamps: true }
-);
+  logs: {
+    createChannel: String,
+    closeChannel: String,
+    deleteChannel: String,
+    userAddChannel: String,
+    userRemoveChannel: String,
+    ratingChannel: String,
+  },
+  isActive: { type: Boolean, default: true },
+}, { timestamps: true });
 
+const ticketSchema = new mongoose.Schema({
+  ticketId: { type: String, required: true, unique: true, index: true },
+  guildId: { type: String, required: true, index: true },
+  panelId: { type: String, required: true, index: true },
+  categoryId: { type: String, required: true },
+  channelId: String,
+  userId: { type: String, required: true, index: true },
+  status: { type: String, enum: ["open", "closed"], default: "open", index: true },
+  addedUsers: [{ userId: String, addedBy: String, addedAt: { type: Date, default: Date.now } }],
+  removedUsers: [{ userId: String, removedBy: String, removedAt: { type: Date, default: Date.now } }],
+  controlMessageId: String,
+  closedBy: String,
+  closedAt: Date,
+  closeReason: String,
+  aiStats: {
+    messages: { type: Number, default: 0 },
+    toolCalls: { type: Number, default: 0 },
+    lastInteractionAt: Date,
+    lastActionAt: Date,
+    escalated: { type: Boolean, default: false },
+    humanTakeover: { type: Boolean, default: false },
+    intent: String,
+    priority: { type: String, enum: ["low", "normal", "high", "urgent"], default: "normal" },
+    summary: String,
+  },
+  rating: {
+    stars: { type: Number, min: 1, max: 5 },
+    feedback: String,
+    ratedAt: Date,
+  },
+}, { timestamps: true });
+
+const inviteSnapshotSchema = new mongoose.Schema({
+  guildId: { type: String, required: true, index: true },
+  code: { type: String, required: true },
+  inviterId: { type: String, index: true },
+  uses: { type: Number, default: 0 },
+  active: { type: Boolean, default: true },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+const inviteStatSchema = new mongoose.Schema({
+  guildId: { type: String, required: true, index: true },
+  userId: { type: String, required: true, index: true },
+  successfulInvites: { type: Number, default: 0 },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+inviteSnapshotSchema.index({ guildId: 1, code: 1 }, { unique: true });
+inviteStatSchema.index({ guildId: 1, userId: 1 }, { unique: true });
 panelSchema.index({ guildId: 1, isActive: 1 });
 ticketSchema.index({ guildId: 1, status: 1 });
 ticketSchema.index({ userId: 1, status: 1 });
@@ -190,5 +124,5 @@ ticketSchema.index({ panelId: 1, categoryId: 1 });
 export const Guild = mongoose.model("Guild", guildSchema);
 export const Panel = mongoose.model("Panel", panelSchema);
 export const Ticket = mongoose.model("Ticket", ticketSchema);
-
-// bread end
+export const InviteSnapshot = mongoose.model("InviteSnapshot", inviteSnapshotSchema);
+export const InviteStat = mongoose.model("InviteStat", inviteStatSchema);
