@@ -15,6 +15,9 @@ export default {
     if (!message.guild || message.author.bot || !message.channel?.isTextBased()) return;
     if (!config.ai.enabled || !config.ai.apiKey) return;
 
+    const guildConfig = await client.db.getGuild(message.guild.id);
+    if (guildConfig?.aiSupport?.enabled === false) return;
+
     const ticket = await client.db.getTicketByChannel(message.channel.id);
     if (!ticket || ticket.status !== "open") return;
 
@@ -49,7 +52,7 @@ export default {
         customerName: message.member?.displayName || message.author.username,
         history,
         latestMessage: message.content,
-        model: category.settings?.aiModel || config.ai.model,
+        model: category.settings?.aiModel || guildConfig?.aiSupport?.model || config.ai.model,
       });
 
       if (!reply) return;
