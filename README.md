@@ -1,69 +1,97 @@
-# HelzerX Studio — AI Ticket Bot
+# HelzerX Studio AI Ticket Manager
 
-A production-focused Discord ticket system for **HelzerX Studio**, now with Gemini-powered support responses.
+HelzerX Studio's Discord ticket system with a Gemini-powered operational support agent.
 
-## Features
-- Discord Components V2 ticket panels
-- MongoDB ticket persistence
-- Ticket lifecycle: create, close, reopen, delete
-- User add/remove controls
-- Staff roles and category-specific permissions
-- Ticket ratings and transcripts
-- **Gemini AI support inside open tickets**
-- Recent ticket history is supplied to Gemini for contextual replies
-- AI pauses when a configured support-role member has recently replied
-- AI avoids inventing prices, policies, account data, refunds, credentials, or staff-only actions
-- AI escalates requests that require human staff
-- Secrets are kept in environment variables
+## What it does
 
-## Gemini setup
+This is intentionally more than a chatbot. The AI can understand natural Discord messages, inspect real customer state, use allowlisted tools, perform approved support operations, and hand tickets to staff when human intervention is required.
 
-HelzerX Studio uses Google's official `@google/genai` SDK. The default model is `gemini-3.8-flash`.
+### Autonomous VPS example
 
-Create a `.env` file:
+A customer can simply say:
 
-```env
-DISCORD_TOKEN=your_discord_bot_token
-DISCORD_CLIENT_ID=your_discord_client_id
-MONGODB_URI=mongodb://localhost:27017/helzerx-studio-tickets
+> mata 3 invite plan vps ekak one
 
-GEMINI_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-3.8-flash
+The AI can:
+
+1. Check the customer's tracked successful invites.
+2. Check the configured invite VPS plan.
+3. Verify eligibility.
+4. Inspect the VPS bot's available nodes.
+5. Inspect supported operating systems.
+6. Automatically choose a suitable node and OS.
+7. Send the provisioning request to the separate Helzer-vps service.
+8. Receive the real VPS result.
+9. Tell the customer the actual resources, node, OS, duration and status.
+10. Point the customer to the configured feedback channel.
+
+The customer is not asked to operate the VPS creation workflow manually.
+
+## Architecture
+
+~~~
+Discord customer
+      |
+      v
+HelzerX AI Ticket Manager
+      |
+      +-- Gemini reasoning
+      +-- Ticket memory
+      +-- Invite tracking
+      +-- Support / escalation tools
+      |
+      v
+Private VPS Agent API
+      |
+      v
+Helzer-vps
+      |
+      +-- node capacity
+      +-- OS catalog
+      +-- Docker provisioning
+      +-- VPS lifecycle
+~~~
+
+Gemini function calling is used as the bridge between natural-language requests and application-side tools. The model proposes a structured tool call; the application executes it and sends the result back to Gemini for the final customer-facing response.
+
+## Environment
+
+~~~
+DISCORD_TOKEN=
+DISCORD_CLIENT_ID=
+MONGODB_URI=
+
 AI_ENABLED=true
-AI_COOLDOWN_MS=2500
-AI_HISTORY_LIMIT=12
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-3.8-flash
+AI_AUTO_ACTIONS=true
+AI_MAX_TOOL_ROUNDS=8
+AI_COOLDOWN_MS=1800
+AI_HISTORY_LIMIT=16
 AI_STAFF_SILENCE_MS=300000
 
-NODE_ENV=production
-DEBUG=false
-```
+VPS_BOT_API_URL=http://127.0.0.1:8787
+VPS_BOT_API_TOKEN=
 
-Install and run:
-```bash
+AI_FEEDBACK_CHANNEL_ID=1552629200714866718
+~~~
+
+## Security model
+
+- Gemini never receives arbitrary shell or Docker access.
+- Tool implementations enforce customer ownership and server-side validation.
+- VPS deletion is staff-controlled from the AI support layer.
+- Secrets are never requested from customers.
+- Staff takeover pauses AI replies for the ticket.
+- The VPS bridge is bearer-token protected.
+- The VPS bot remains the actual infrastructure executor.
+
+## Tests
+
+~~~
 npm install
-npm run test
-npm start
-```
+npm test
+npm run test:syntax
+~~~
 
-## How the AI works
-1. Confirms the channel belongs to an open ticket.
-2. Loads the ticket category and configured support roles.
-3. Reads a small recent window of the ticket conversation.
-4. Avoids answering while a support-role member has recently replied.
-5. Sends the conversation and latest customer message to Gemini.
-6. Posts the response back into the ticket.
-7. Records basic AI interaction statistics in MongoDB.
-
-The AI is designed to sound natural and helpful, but it does not pretend to be a human if asked directly.
-
-## Safety
-Never place Discord tokens, Gemini API keys, MongoDB passwords, payment credentials, or private keys in source code. Rotate any credential that has previously been committed to a repository.
-
-## Development
-```bash
-npm run test
-npm run test:ai
-npm run format
-```
-
-Built for **HelzerX Studio**.
+Runtime integration with Discord, MongoDB, Gemini and the VPS agent should be tested on the deployment environment after configuring the required secrets.
