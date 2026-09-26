@@ -1,1 +1,64 @@
-import { Command } from "#structures/classes/Command";\nimport { PermissionFlagsBits, ContainerBuilder, TextDisplayBuilder, MessageFlags } from "discord.js";\n\nconst build = (title, body) => new ContainerBuilder()\n  .addTextDisplayComponents(new TextDisplayBuilder().setContent("## " + title + "\n\n" + body));\n\nclass AICommand extends Command {\n  constructor() {\n    super({\n      name: "ai",\n      description: "Manage HelzerX AI support",\n      usage: "ai <status|enable|disable>",\n      examples: ["ai status", "ai enable", "ai disable"],\n      userPermissions: [PermissionFlagsBits.ManageGuild],\n      botPermissions: [],\n      enabledSlash: false,\n    });\n  }\n\n  async execute({ ctx, args }) {\n    const action = String(args?.[0] || "status").toLowerCase();\n    const db = ctx.client.db;\n\n    if (action === "enable" || action === "disable") {\n      const enabled = action === "enable";\n      await db.updateGuild(ctx.guild.id, {\n        "aiSupport.enabled": enabled,\n        "aiSupport.autoActions": enabled,\n      });\n      return ctx.reply({\n        components: [build("AI Support Updated", "HelzerX Studio AI support is now **" + (enabled ? "enabled" : "disabled") + "** for this server.")],\n        flags: MessageFlags.IsComponentsV2,\n      });\n    }\n\n    if (action === "status") {\n      const guild = await db.getGuild(ctx.guild.id);\n      const enabled = guild?.aiSupport?.enabled !== false;\n      const model = guild?.aiSupport?.model || ctx.client.config.ai.model;\n      const autoActions = guild?.aiSupport?.autoActions !== false;\n      return ctx.reply({\n        components: [build(\n          "HelzerX AI Support",\n          [\n            "Status: **" + (enabled ? "Enabled" : "Disabled") + "**",\n            "Model: **" + model + "**",\n            "Automatic actions: **" + (autoActions ? "Enabled" : "Disabled") + "**",\n            "",\n            "The AI can handle supported account, billing, payment, order, domain, Minecraft, AI-agent, rewards, VPS, and technical-support workflows when the corresponding service API is configured.",\n          ].join("\n"),\n        )],\n        flags: MessageFlags.IsComponentsV2,\n      });\n    }\n\n    return ctx.reply({\n      components: [build("AI Support", "Usage: `.ai status`, `.ai enable`, or `.ai disable`.")],\n      flags: MessageFlags.IsComponentsV2,\n    });\n  }\n}\n\nexport default new AICommand();
+import { Command } from "#structures/classes/Command";
+import { PermissionFlagsBits, ContainerBuilder, TextDisplayBuilder, MessageFlags } from "discord.js";
+
+const build = (title, body) => new ContainerBuilder()
+  .addTextDisplayComponents(new TextDisplayBuilder().setContent("## " + title + "\n\n" + body));
+
+class AICommand extends Command {
+  constructor() {
+    super({
+      name: "ai",
+      description: "Manage HelzerX AI support",
+      usage: "ai <status|enable|disable>",
+      examples: ["ai status", "ai enable", "ai disable"],
+      userPermissions: [PermissionFlagsBits.ManageGuild],
+      botPermissions: [],
+      enabledSlash: false,
+    });
+  }
+
+  async execute({ ctx, args }) {
+    const action = String(args?.[0] || "status").toLowerCase();
+    const db = ctx.client.db;
+
+    if (action === "enable" || action === "disable") {
+      const enabled = action === "enable";
+      await db.updateGuild(ctx.guild.id, {
+        "aiSupport.enabled": enabled,
+        "aiSupport.autoActions": enabled,
+      });
+      return ctx.reply({
+        components: [build("AI Support Updated", "HelzerX Studio AI support is now **" + (enabled ? "enabled" : "disabled") + "** for this server.")],
+        flags: MessageFlags.IsComponentsV2,
+      });
+    }
+
+    if (action === "status") {
+      const guild = await db.getGuild(ctx.guild.id);
+      const enabled = guild?.aiSupport?.enabled !== false;
+      const model = guild?.aiSupport?.model || ctx.client.config.ai.model;
+      const autoActions = guild?.aiSupport?.autoActions !== false;
+
+      return ctx.reply({
+        components: [build(
+          "HelzerX AI Support",
+          [
+            "Status: **" + (enabled ? "Enabled" : "Disabled") + "**",
+            "Model: **" + model + "**",
+            "Automatic actions: **" + (autoActions ? "Enabled" : "Disabled") + "**",
+            "",
+            "The AI can handle supported account, billing, payment, order, domain, Minecraft, AI-agent, rewards, VPS, and technical-support workflows when the corresponding service API is configured.",
+          ].join("\n"),
+        )],
+        flags: MessageFlags.IsComponentsV2,
+      });
+    }
+
+    return ctx.reply({
+      components: [build("AI Support", "Usage: .ai status, .ai enable, or .ai disable.")],
+      flags: MessageFlags.IsComponentsV2,
+    });
+  }
+}
+
+export default new AICommand();
