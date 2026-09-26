@@ -29,7 +29,7 @@ export class TicketUI {
 
     container.addTextDisplayComponents(
       new TextDisplayBuilder().setContent(
-        `## ${emoji.ticket} HelzerX Studio • ${category.name}\n\n${welcomeMsg}\n\n**Category Focus**\n${focus}\n\n**Ticket**\n> **ID:** \\`#${ticket.ticketId.replace("ticket_", "").slice(-8)}\\`\n> **Status:** ${isOpen ? "🟢 Open" : "🔒 Closed"}\n> **Support:** ${aiStatus}\n> **Creator:** <@${ticket.userId}>`
+        `## ${emoji.ticket} HelzerX Studio • ${category.name}\n\n${welcomeMsg}\n\n**Category Focus**\n${focus}\n\n**Ticket**\n> **ID:** \`#${ticket.ticketId.replace("ticket_", "").slice(-8)}\`\n> **Status:** ${isOpen ? "🟢 Open" : "🔒 Closed"}\n> **Support:** ${aiStatus}\n> **Creator:** <@${ticket.userId}>`
       )
     );
 
