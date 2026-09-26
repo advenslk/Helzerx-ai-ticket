@@ -19,6 +19,12 @@ const withTimeout = async (promise, timeoutMs) => {
   }
 };
 
+async function audit(input, data) {
+  try {
+    await input.client.db.recordAIAudit(data);
+  } catch {}
+}
+
 export function formatHistory(messages) {
   return messages
     .filter((m) => m.content?.trim())
@@ -64,7 +70,7 @@ export function buildSupportPrompt({ guildName, categoryName, customerName, hist
   ].join("\n");
 }
 
-async function audit(input, data) {\n  try { await input.client.db.recordAIAudit(data); } catch {}\n}\n\nexport async function generateSupportReply(input) {
+export async function generateSupportReply(input) {
   if (!client || !config.ai.enabled) {
     return { text: null, toolCalls: 0, reason: "ai_disabled" };
   }
@@ -113,9 +119,30 @@ async function audit(input, data) {\n  try { await input.client.db.recordAIAudit
 
       try {
         if (!handler) throw new Error("Tool is not available.");
-        result = await handler(call.args || {});\n        await audit(input, {\n          guildId: input.message.guild.id,\n          ticketId: input.ticket.ticketId,\n          userId: input.message.author.id,\n          type: "tool",\n          tool: call.name,\n          success: true,\n          summary: "AI executed " + call.name,\n          metadata: { args: call.name === "create_payment_link" ? { invoice_id: call.args?.invoice_id } : undefined },\n        });
+        result = await handler(call.args || {});
+        await audit(input, {
+          guildId: input.message.guild.id,
+          ticketId: input.ticket.ticketId,
+          userId: input.message.author.id,
+          type: "tool",
+          tool: call.name,
+          success: true,
+          summary: "AI executed " + call.name,
+          metadata: call.name === "create_payment_link"
+            ? { invoice_id: call.args?.invoice_id }
+            : undefined,
+        });
       } catch (error) {
-        result = { error: error.message || "Tool execution failed." };\n        await input.client.db.recordAIAudit({\n          guildId: input.message.guild.id,\n          ticketId: input.ticket.ticketId,\n          userId: input.message.author.id,\n          type: "tool_error",\n          tool: call.name,\n          success: false,\n          summary: error.message || "Tool execution failed.",\n        });
+        result = { error: error.message || "Tool execution failed." };
+        await audit(input, {
+          guildId: input.message.guild.id,
+          ticketId: input.ticket.ticketId,
+          userId: input.message.author.id,
+          type: "tool_error",
+          tool: call.name,
+          success: false,
+          summary: error.message || "Tool execution failed.",
+        });
       }
 
       functionParts.push({
