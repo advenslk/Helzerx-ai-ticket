@@ -17,6 +17,7 @@ export const config = {
     historyLimit: Number(process.env.AI_HISTORY_LIMIT || 16),
     staffSilenceMs: Number(process.env.AI_STAFF_SILENCE_MS || 5 * 60 * 1000),
     maxToolRounds: Number(process.env.AI_MAX_TOOL_ROUNDS || 8),
+    providerTimeoutMs: Number(process.env.AI_PROVIDER_TIMEOUT_MS || 30000),
     autoActions: parseBool(process.env.AI_AUTO_ACTIONS, true),
   },
   vps: {
