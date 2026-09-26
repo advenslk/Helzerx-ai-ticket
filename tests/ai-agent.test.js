@@ -33,6 +33,14 @@ test("AI tool registry exposes full business support without shell access", () =
   assert.ok(!names.includes("ssh_exec"));
 });
 
+test("Minecraft catalog contains the published HelzerX Cloud plans", () => {
+  const knowledge = buildKnowledgeContext();
+  for (const plan of ["HXC-S02", "HXC-S04", "HXC-S06", "HXC-S08", "HXC-S12", "HXC-S16", "HXC-S24", "HXC-S32", "HXC-S48", "HXC-S64"]) assert.match(knowledge, new RegExp(plan));
+  assert.match(knowledge, /HXC-S02.*2GB RAM.*100% CPU Power.*20GB NVMe.*\$0\.69\/month/i);
+  assert.match(knowledge, /HXC-S64.*64GB RAM.*1200% CPU Power.*640GB NVMe.*\$14\.99\/month/i);
+  assert.match(knowledge, /Singapore, India, Germany, Hong Kong, USA, Vietnam, and Australia/i);
+});
+
 test("invite VPS plan is explicit and deterministic", () => {
   const plan = config.invitePlans.find((item) => item.id === "3-invite-vps");
   assert.equal(plan.requiredInvites, 3);
