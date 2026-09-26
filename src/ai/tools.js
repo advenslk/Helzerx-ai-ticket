@@ -9,7 +9,10 @@ const declaration = (name, description, properties = {}, required = []) => ({
 });
 
 export const toolDeclarations = [
-  declaration("get_service_catalog", "List real HelzerX products and services currently available.", {}),\n  declaration("get_service", "Read one customer service by service ID.", { service_id: { type: "STRING", description: "Service ID." } }, ["service_id"]),\n  declaration("request_service_action", "Request an approved service operation such as renewal, suspension, reactivation, or cancellation through the business API. The business API enforces permissions and billing rules.", { service_id: { type: "STRING", description: "Customer service ID." }, action: { type: "STRING", description: "Requested operation." }, confirmed: { type: "BOOLEAN", description: "Explicit confirmation in the current ticket for destructive or money-affecting actions." } }, ["service_id", "action"]),\n  declaration("get_customer_profile", "Read the customer's real HelzerX account profile and account status.", {
+  declaration("get_service_catalog", "List real HelzerX products and services currently available.", {}),
+  declaration("get_service", "Read one customer service by service ID.", { service_id: { type: "STRING", description: "Service ID." } }, ["service_id"]),
+  declaration("request_service_action", "Request an approved service operation such as renewal, suspension, reactivation, or cancellation through the business API. The business API enforces permissions and billing rules.", { service_id: { type: "STRING", description: "Customer service ID." }, action: { type: "STRING", description: "Requested operation." }, confirmed: { type: "BOOLEAN", description: "Explicit confirmation in the current ticket for destructive or money-affecting actions." } }, ["service_id", "action"]),
+  declaration("get_customer_profile", "Read the customer's real HelzerX account profile and account status.", {
     user_id: { type: "STRING", description: "Customer Discord user ID." },
   }, ["user_id"]),
   declaration("get_customer_services", "List the customer's active and historical HelzerX services across supported products.", {
@@ -114,7 +117,22 @@ export function createToolExecutor({ client, message, ticket, category }) {
   };
 
   return {
-    async get_service_catalog() {\n      return business.catalog();\n    },\n    async get_service(args) {\n      const result = await business.service(args.service_id);\n      if (result?.service?.user_id && String(result.service.user_id) !== String(userId)) throw new Error("That service does not belong to this customer.");\n      return result;\n    },\n    async request_service_action(args) {\n      const action = String(args.action || "").toLowerCase();\n      const destructive = new Set(["cancel", "delete", "terminate", "refund", "suspend"]);\n      if (destructive.has(action) && args.confirmed !== true) throw new Error("Explicit confirmation is required for this service action.");\n      const result = await business.serviceAction({ service_id: args.service_id, user_id: userId, action, confirmed: args.confirmed === true });\n      return result;\n    },\n    async get_customer_profile(args) {
+    async get_service_catalog() {
+      return business.catalog();
+    },
+    async get_service(args) {
+      const result = await business.service(args.service_id);
+      if (result?.service?.user_id && String(result.service.user_id) !== String(userId)) throw new Error("That service does not belong to this customer.");
+      return result;
+    },
+    async request_service_action(args) {
+      const action = String(args.action || "").toLowerCase();
+      const destructive = new Set(["cancel", "delete", "terminate", "refund", "suspend"]);
+      if (destructive.has(action) && args.confirmed !== true) throw new Error("Explicit confirmation is required for this service action.");
+      const result = await business.serviceAction({ service_id: args.service_id, user_id: userId, action, confirmed: args.confirmed === true });
+      return result;
+    },
+    async get_customer_profile(args) {
       assertSelf(args.user_id);
       return business.customer(userId);
     },
