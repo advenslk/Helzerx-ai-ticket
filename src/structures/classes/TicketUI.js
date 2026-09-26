@@ -63,6 +63,7 @@ export class TicketUI {
       container.addActionRowComponents(new ActionRowBuilder().addComponents(...buttons));
     } else {
       container.addActionRowComponents(new ActionRowBuilder().addComponents(
+        new ButtonBuilder().setCustomId(`ticket_transcript_${ticket.ticketId}`).setEmoji("📄").setLabel("Transcript").setStyle(ButtonStyle.Secondary),
         new ButtonBuilder().setCustomId(`ticket_reopen_${ticket.ticketId}`).setEmoji(emoji.unlock).setLabel("Reopen").setStyle(ButtonStyle.Success),
         new ButtonBuilder().setCustomId(`ticket_delete_${ticket.ticketId}`).setEmoji(emoji.trash).setLabel("Delete").setStyle(ButtonStyle.Danger)
       ));
