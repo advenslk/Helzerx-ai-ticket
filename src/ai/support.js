@@ -113,9 +113,9 @@ export async function generateSupportReply(input) {
 
       try {
         if (!handler) throw new Error("Tool is not available.");
-        result = await handler(call.args || {});
+        result = await handler(call.args || {});\n        await input.client.db.recordAIAudit({\n          guildId: input.message.guild.id,\n          ticketId: input.ticket.ticketId,\n          userId: input.message.author.id,\n          type: "tool",\n          tool: call.name,\n          success: true,\n          summary: "AI executed " + call.name,\n          metadata: { args: call.name === "create_payment_link" ? { invoice_id: call.args?.invoice_id } : undefined },\n        });
       } catch (error) {
-        result = { error: error.message || "Tool execution failed." };
+        result = { error: error.message || "Tool execution failed." };\n        await input.client.db.recordAIAudit({\n          guildId: input.message.guild.id,\n          ticketId: input.ticket.ticketId,\n          userId: input.message.author.id,\n          type: "tool_error",\n          tool: call.name,\n          success: false,\n          summary: error.message || "Tool execution failed.",\n        });
       }
 
       functionParts.push({
