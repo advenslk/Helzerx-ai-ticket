@@ -122,14 +122,12 @@ export async function generateSupportReply(input) {
     return { text: null, toolCalls: 0, reason: "ai_disabled" };
   }
 
-  const historicalContents = input.history?.filter((item) => item.parts?.[0]?.text) || [];
-  const contents = [
-    ...historicalContents,
-    {
-      role: "user",
-      parts: [{ text: input.latestMessage }],
-    },
-  ];
+  // Discord history is supplied as context in the system instruction. Keep the API's
+  // current turn clean so Gemini 3.x can preserve its own tool-call signatures safely.
+  const contents = [{
+    role: "user",
+    parts: [{ text: input.latestMessage }],
+  }];
 
   const executor = createToolExecutor(input);
   let toolCalls = 0;
