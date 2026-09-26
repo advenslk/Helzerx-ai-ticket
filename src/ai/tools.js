@@ -1,6 +1,7 @@
 import { config } from "#config/config";
 import { VPSBotClient } from "#integrations/vpsClient";
 import { HelzerXClient } from "#integrations/helzerxClient";
+import TicketUI from "#structures/classes/TicketUI";
 
 const declaration = (name, description, properties = {}, required = []) => ({
   name,
@@ -259,7 +260,14 @@ export function createToolExecutor({ client, message, ticket, category }) {
       const roles = category?.supportRoles || [];
       const mention = roles.length ? roles.map((roleId) => "<@&" + roleId + ">").join(" ") : "Support staff";
       await message.channel.send({
-        content: mention + " — AI escalated this ticket: " + String(args.reason).slice(0, 800),
+        components: [TicketUI.buildStaffEscalation({
+          reason: String(args.reason).slice(0, 900),
+          priority,
+          ticketId: ticket.ticketId,
+          customerId: userId,
+          staffRoles: roles,
+        })],
+        flags: TicketUI.getFlags(),
         allowedMentions: { roles },
       });
       return { escalated: true, priority, reason: args.reason };
