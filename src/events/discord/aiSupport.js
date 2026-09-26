@@ -54,6 +54,7 @@ export default {
       const result = await generateSupportReply({
         guildName: message.guild.name,
         categoryName: category.name,
+        categoryDescription: category.description || category.settings?.welcomeMessage || "",
         customerName: message.member?.displayName || message.author.username,
         history: formatHistory(ordered),
         latestMessage: message.content,
