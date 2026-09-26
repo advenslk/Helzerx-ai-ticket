@@ -55,7 +55,15 @@ export class DatabaseManager extends EventEmitter {
     }
   }
 
-  async recordAIAudit(data) {\n    return await AIAudit.create(data);\n  }\n\n  async getAIAudits(ticketId, limit = 50) {\n    return await AIAudit.find({ ticketId }).sort({ createdAt: -1 }).limit(limit).lean();\n  }\n\n  async getGuild(guildId) {
+  async recordAIAudit(data) {
+    return await AIAudit.create(data);
+  }
+
+  async getAIAudits(ticketId, limit = 50) {
+    return await AIAudit.find({ ticketId }).sort({ createdAt: -1 }).limit(limit).lean();
+  }
+
+  async getGuild(guildId) {
     return await Guild.findOne({ guildId });
   }
 
@@ -581,7 +589,16 @@ async setPanelMessageId(panelId, channelId, messageId) {
     return await Ticket.countDocuments();
   }
 
-  async getAIStats(guildId) {\n    const [audits, escalated, aiMessages] = await Promise.all([\n      AIAudit.countDocuments({ guildId }),\n      Ticket.countDocuments({ guildId, "aiStats.escalated": true }),\n      Ticket.aggregate([{ $match: { guildId } }, { $group: { _id: null, messages: { $sum: "$aiStats.messages" }, toolCalls: { $sum: "$aiStats.toolCalls" } } }]),\n    ]);\n    return { audits, escalated, messages: aiMessages[0]?.messages || 0, toolCalls: aiMessages[0]?.toolCalls || 0 };\n  }\n\n  async getTotalOpenTicketCount() {
+  async getAIStats(guildId) {
+    const [audits, escalated, aiMessages] = await Promise.all([
+      AIAudit.countDocuments({ guildId }),
+      Ticket.countDocuments({ guildId, "aiStats.escalated": true }),
+      Ticket.aggregate([{ $match: { guildId } }, { $group: { _id: null, messages: { $sum: "$aiStats.messages" }, toolCalls: { $sum: "$aiStats.toolCalls" } } }]),
+    ]);
+    return { audits, escalated, messages: aiMessages[0]?.messages || 0, toolCalls: aiMessages[0]?.toolCalls || 0 };
+  }
+
+  async getTotalOpenTicketCount() {
     return await Ticket.countDocuments({ status: "open" });
   }
 }
