@@ -78,6 +78,8 @@ const ticketSchema = new mongoose.Schema({
   addedUsers: [{ userId: String, addedBy: String, addedAt: { type: Date, default: Date.now } }],
   removedUsers: [{ userId: String, removedBy: String, removedAt: { type: Date, default: Date.now } }],
   controlMessageId: String,
+  claimedBy: String,
+  claimedAt: Date,
   closedBy: String,
   closedAt: Date,
   closeReason: String,
