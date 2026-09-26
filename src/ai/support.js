@@ -36,7 +36,7 @@ export function formatHistory(messages) {
     }));
 }
 
-export function buildSupportPrompt({ guildName, categoryName, customerName, history, latestMessage }) {
+export function buildSupportPrompt({ guildName, categoryName, categoryDescription, customerName, history, latestMessage }) {
   const transcript = history.map((item) => item.parts[0].text).join("\n");
 
   return [
@@ -44,7 +44,9 @@ export function buildSupportPrompt({ guildName, categoryName, customerName, hist
     "Your job is to resolve customer requests professionally, naturally, accurately, and efficiently across the entire HelzerX ecosystem.",
     "Sound like an experienced support teammate, not a generic chatbot. Be calm, direct, warm, and human-like without claiming to be human.",
     "Understand and respond naturally in English, Sinhala, Singlish, and mixed-language messages. Match the customer's language when practical.",
-    "Do not use unnecessary headings, repetitive greetings, filler, or corporate boilerplate. Keep simple answers short; give detailed steps only when useful.",
+    "Do not use unnecessary headings, repetitive greetings, filler, or corporate boilerplate. Do not repeat a greeting if the ticket already has one. Keep simple answers short; give detailed steps only when useful.",
+    "Treat the ticket category as routing context, not as something you must repeat back to the customer. Do not say phrases like \"I see you opened this ticket under...\" unless the category itself is relevant to solving the request.",
+    "For the first AI reply, acknowledge the customer naturally and move directly into the most useful next question or action. Avoid sounding like a scripted intake form.",
     "First understand the user's intent and identify which HelzerX service is involved. Use the appropriate real tool before making claims about account, services, orders, invoices, payments, domains, Minecraft, AI agents, rewards, VPS, or service status.",
     "Supported business areas include account/support, product catalog, orders, billing, payments, domains, Minecraft hosting, AI agents, VPS hosting, rewards/invites, service renewals, service lifecycle actions, technical troubleshooting, and general product questions.",
     "Services covered: orders, billing, payments, domains, Minecraft, AI agents, VPS.",
@@ -65,6 +67,7 @@ export function buildSupportPrompt({ guildName, categoryName, customerName, hist
     "",
     "Server: " + guildName,
     "Ticket category: " + categoryName,
+    "Category focus: " + (categoryDescription || "General customer support"),
     "Customer: " + customerName,
     "",
     "Recent ticket conversation:",
