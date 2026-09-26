@@ -33,7 +33,26 @@ class AICommand extends Command {
       });
     }
 
-    if (action === "stats") {\n      const stats = await db.getAIStats(ctx.guild.id);\n      return ctx.reply({ components: [build("AI Support Analytics", [\n        "AI messages: **" + stats.messages + "**",\n        "Tool calls: **" + stats.toolCalls + "**",\n        "Audited actions: **" + stats.audits + "**",\n        "Escalated tickets: **" + stats.escalated + "**",\n      ].join("\\n"))], flags: MessageFlags.IsComponentsV2 });\n    }\n\n    if (action === "takeover" || action === "resume") {\n      const ticketId = String(args?.[1] || "");\n      if (!ticketId) return ctx.reply("Please provide a ticket ID.");\n      const ticket = await db.getTicket(ticketId);\n      if (!ticket || ticket.guildId !== ctx.guild.id) return ctx.reply("Ticket not found in this server.");\n      await db.updateTicket(ticketId, { "aiStats.humanTakeover": action === "takeover", "aiStats.escalated": action === "takeover" });\n      return ctx.reply({ components: [build("AI " + (action === "takeover" ? "Takeover" : "Resumed"), "AI handling is now **" + (action === "takeover" ? "paused for staff" : "resumed") + "** for `" + ticketId + "`.")], flags: MessageFlags.IsComponentsV2 });\n    }\n\n    if (action === "status") {
+    if (action === "stats") {
+      const stats = await db.getAIStats(ctx.guild.id);
+      return ctx.reply({ components: [build("AI Support Analytics", [
+        "AI messages: **" + stats.messages + "**",
+        "Tool calls: **" + stats.toolCalls + "**",
+        "Audited actions: **" + stats.audits + "**",
+        "Escalated tickets: **" + stats.escalated + "**",
+      ].join("\\n"))], flags: MessageFlags.IsComponentsV2 });
+    }
+
+    if (action === "takeover" || action === "resume") {
+      const ticketId = String(args?.[1] || "");
+      if (!ticketId) return ctx.reply("Please provide a ticket ID.");
+      const ticket = await db.getTicket(ticketId);
+      if (!ticket || ticket.guildId !== ctx.guild.id) return ctx.reply("Ticket not found in this server.");
+      await db.updateTicket(ticketId, { "aiStats.humanTakeover": action === "takeover", "aiStats.escalated": action === "takeover" });
+      return ctx.reply({ components: [build("AI " + (action === "takeover" ? "Takeover" : "Resumed"), "AI handling is now **" + (action === "takeover" ? "paused for staff" : "resumed") + "** for `" + ticketId + "`.")], flags: MessageFlags.IsComponentsV2 });
+    }
+
+    if (action === "status") {
       const guild = await db.getGuild(ctx.guild.id);
       const enabled = guild?.aiSupport?.enabled !== false;
       const model = guild?.aiSupport?.model || ctx.client.config.ai.model;
