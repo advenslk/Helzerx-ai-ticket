@@ -397,8 +397,39 @@ async setPanelMessageId(panelId, channelId, messageId) {
   async setTicketChannel(ticketId, channelId) {
     return await this.updateTicket(ticketId, { channelId });
   }
-  async setTicketControlMessage(ticketId, controlMessageId){
-    return await this.updateTicket(ticketId, { controlMessageId: controlMessageId });
+  async setTicketControlMessage(ticketId, controlMessageId) {
+    return await this.updateTicket(ticketId, { controlMessageId });
+  }
+
+  async claimTicket(ticketId, staffId) {
+    const ticket = await Ticket.findOneAndUpdate(
+      { ticketId, status: "open", claimedBy: { $in: [null, ""] } },
+      {
+        $set: {
+          claimedBy: staffId,
+          claimedAt: new Date(),
+          "aiStats.humanTakeover": true,
+          "aiStats.escalated": true,
+          "aiStats.lastActionAt": new Date(),
+        },
+      },
+      { new: true }
+    );
+    return ticket;
+  }
+
+  async unclaimTicket(ticketId) {
+    return await Ticket.findOneAndUpdate(
+      { ticketId },
+      {
+        $set: {
+          claimedBy: null,
+          claimedAt: null,
+          "aiStats.humanTakeover": false,
+        },
+      },
+      { new: true }
+    );
   }
 
   async addTicketUser(ticketId, userId, addedBy) {
