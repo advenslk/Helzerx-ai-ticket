@@ -9,8 +9,8 @@ class AICommand extends Command {
     super({
       name: "ai",
       description: "Manage HelzerX AI support",
-      usage: "ai <status|enable|disable>",
-      examples: ["ai status", "ai enable", "ai disable"],
+      usage: "ai <status|enable|disable|stats|takeover|resume> [ticket]",
+      examples: ["ai status", "ai enable", "ai disable", "ai stats"],
       userPermissions: [PermissionFlagsBits.ManageGuild],
       botPermissions: [],
       enabledSlash: false,
@@ -33,7 +33,7 @@ class AICommand extends Command {
       });
     }
 
-    if (action === "status") {
+    if (action === "stats") {\n      const stats = await db.getAIStats(ctx.guild.id);\n      return ctx.reply({ components: [build("AI Support Analytics", [\n        "AI messages: **" + stats.messages + "**",\n        "Tool calls: **" + stats.toolCalls + "**",\n        "Audited actions: **" + stats.audits + "**",\n        "Escalated tickets: **" + stats.escalated + "**",\n      ].join("\\n"))], flags: MessageFlags.IsComponentsV2 });\n    }\n\n    if (action === "takeover" || action === "resume") {\n      const ticketId = String(args?.[1] || "");\n      if (!ticketId) return ctx.reply("Please provide a ticket ID.");\n      const ticket = await db.getTicket(ticketId);\n      if (!ticket || ticket.guildId !== ctx.guild.id) return ctx.reply("Ticket not found in this server.");\n      await db.updateTicket(ticketId, { "aiStats.humanTakeover": action === "takeover", "aiStats.escalated": action === "takeover" });\n      return ctx.reply({ components: [build("AI " + (action === "takeover" ? "Takeover" : "Resumed"), "AI handling is now **" + (action === "takeover" ? "paused for staff" : "resumed") + "** for `" + ticketId + "`.")], flags: MessageFlags.IsComponentsV2 });\n    }\n\n    if (action === "status") {
       const guild = await db.getGuild(ctx.guild.id);
       const enabled = guild?.aiSupport?.enabled !== false;
       const model = guild?.aiSupport?.model || ctx.client.config.ai.model;
