@@ -85,7 +85,7 @@ export class HelzerXClient {
     return this.request("/v1/agent/customers/" + encodeURIComponent(userId) + "/minecraft");
   }
 
-  aiAgents(userId) {
+  catalog() {\n    return this.request("/v1/agent/catalog");\n  }\n\n  service(serviceId) {\n    return this.request("/v1/agent/services/" + encodeURIComponent(serviceId));\n  }\n\n  serviceAction(input) {\n    return this.request("/v1/agent/service-actions", { method: "POST", body: JSON.stringify(input) });\n  }\n\n  aiAgents(userId) {
     return this.request("/v1/agent/customers/" + encodeURIComponent(userId) + "/ai-agents");
   }
 }
