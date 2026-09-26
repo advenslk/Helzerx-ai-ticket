@@ -18,6 +18,7 @@ export const config = {
     staffSilenceMs: Number(process.env.AI_STAFF_SILENCE_MS || 5 * 60 * 1000),
     maxToolRounds: Number(process.env.AI_MAX_TOOL_ROUNDS || 8),
     providerTimeoutMs: Number(process.env.AI_PROVIDER_TIMEOUT_MS || 30000),
+    thinkingLevel: ["low", "medium", "high"].includes(process.env.AI_THINKING_LEVEL) ? process.env.AI_THINKING_LEVEL : "medium",
     autoActions: parseBool(process.env.AI_AUTO_ACTIONS, true),
   },
   vps: {
