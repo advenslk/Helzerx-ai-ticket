@@ -24,6 +24,11 @@ export const config = {
     apiToken: process.env.VPS_BOT_API_TOKEN || "",
     timeoutMs: Number(process.env.VPS_BOT_TIMEOUT_MS || 15000),
   },
+  business: {
+    apiUrl: (process.env.HELZERX_API_URL || "").replace(/\/$/, ""),
+    apiToken: process.env.HELZERX_API_TOKEN || "",
+    timeoutMs: Number(process.env.HELZERX_API_TIMEOUT_MS || 15000),
+  },
   invitePlans: [{
     id: "3-invite-vps",
     name: "3 Invite VPS",
@@ -48,5 +53,5 @@ export const config = {
     product: "HelzerX Studio AI Support",
     watermark: "HelzerX Studio",
   },
-  version: "4.0.0",
+  version: "5.0.0",
 };
