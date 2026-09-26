@@ -98,6 +98,26 @@ export class TicketUI {
     return container;
   }
 
+  static buildStaffEscalation({ reason, priority = "normal", ticketId, customerId, staffRoles = [] }) {
+    const container = new ContainerBuilder();
+    const roleMentions = staffRoles.length ? staffRoles.map((roleId) => "<@&" + roleId + ">").join(" ") : "Support Staff";
+    const priorityLabel = String(priority).toUpperCase();
+
+    container.addTextDisplayComponents(
+      new TextDisplayBuilder().setContent(
+        "## Human Support Required\n\n" +
+        roleMentions + "\n\n" +
+        "**Priority:** " + priorityLabel + "\n" +
+        "**Customer:** <@" + customerId + ">\n" +
+        "**Ticket:** `" + ticketId + "`\n\n" +
+        "**Reason**\n" + reason + "\n\n" +
+        "HelzerX Studio AI has paused automated handling for this ticket. A staff member should review and continue the conversation."
+      )
+    );
+
+    return container;
+  }
+
   static buildRatingRequest(ticketId, userId) {
     const container = new ContainerBuilder();
     
