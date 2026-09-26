@@ -17,6 +17,9 @@ test("buildSupportPrompt creates a multilingual, service-aware support agent", (
   assert.match(prompt, /Never invent prices, plans, policies, refunds, payment status/i);
   assert.match(prompt, /Never ask for passwords, API keys, bot tokens/i);
   assert.match(prompt, /Latest customer message: Can you check it?/);
+  assert.match(prompt, /HXC-S02.*\$0\.69\/month/i);
+  assert.match(prompt, /HXC-S64.*\$14\.99\/month/i);
+  assert.match(prompt, /Java and Bedrock support/i);
   assert.match(prompt, /Mage payment eka pending/);
 });
 
