@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { toolDeclarations } from "../src/ai/tools.js";
 import { buildKnowledgeContext } from "../src/ai/knowledge.js";
 import { config } from "../src/config/config.js";
+import TicketUI from "../src/structures/classes/TicketUI.js";
 
 test("AI tool registry exposes full business support without shell access", () => {
   const names = toolDeclarations.map((tool) => tool.name);
@@ -56,4 +57,32 @@ test("knowledge context describes the full HelzerX support surface", () => {
   assert.match(knowledge, /billing, payments, domains, Minecraft hosting, AI agents/i);
   assert.match(knowledge, /automatically choose a suitable available node and OS/i);
   assert.match(knowledge, /feedback channel/i);
+});
+
+
+test("ticket control panel exposes polished AI support controls", () => {
+  const ticket = {
+    ticketId: "ticket_0000837",
+    status: "open",
+    userId: "123456789",
+    claimedBy: null,
+    aiStats: { humanTakeover: false },
+  };
+  const category = {
+    name: "Account Issue",
+    description: "Login, password reset, or client area account problems",
+    supportRoles: ["987654321"],
+    settings: { aiEnabled: true, welcomeMessage: "Tell us what happened and we'll help." },
+  };
+
+  const panel = TicketUI.buildTicketPanel(ticket, category);
+  const json = panel.toJSON();
+
+  const serialized = JSON.stringify(json);
+  assert.match(serialized, /Account Issue/);
+  assert.match(serialized, /Category Focus/);
+  assert.match(serialized, /AI Support Online/);
+  assert.match(serialized, /ticket_claim_ticket_0000837/);
+  assert.match(serialized, /ticket_transcript_ticket_0000837/);
+  assert.match(serialized, /Quick Resolution Guide/);
 });
