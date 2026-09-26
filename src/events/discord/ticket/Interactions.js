@@ -16,7 +16,8 @@ import {
   SeparatorSpacingSize
 } from "discord.js";
 import { logger } from "#utils/logger";
-import TicketUI from "#structures/classes/TicketUI";\nimport * as discordTranscripts from "discord-html-transcripts";
+import TicketUI from "#structures/classes/TicketUI";
+import * as discordTranscripts from "discord-html-transcripts";
 import { emoji } from "#config/emoji"
 
 export default {
@@ -31,7 +32,8 @@ export default {
       ticket_create: handleTicketCreate,
       ticket_close: handleTicketClose,
       ticket_claim: handleTicketClaim,
-      ticket_unclaim: handleTicketUnclaim,\n      ticket_transcript: handleTicketTranscript,
+      ticket_unclaim: handleTicketUnclaim,
+      ticket_transcript: handleTicketTranscript,
       ticket_add_user: handleTicketAddUser,
       ticket_remove_user: handleTicketRemoveUser,
       ticket_rate: handleTicketRate,
