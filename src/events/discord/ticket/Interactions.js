@@ -16,7 +16,7 @@ import {
   SeparatorSpacingSize
 } from "discord.js";
 import { logger } from "#utils/logger";
-import TicketUI from "#structures/classes/TicketUI";
+import TicketUI from "#structures/classes/TicketUI";\nimport * as discordTranscripts from "discord-html-transcripts";
 import { emoji } from "#config/emoji"
 
 export default {
@@ -31,7 +31,7 @@ export default {
       ticket_create: handleTicketCreate,
       ticket_close: handleTicketClose,
       ticket_claim: handleTicketClaim,
-      ticket_unclaim: handleTicketUnclaim,
+      ticket_unclaim: handleTicketUnclaim,\n      ticket_transcript: handleTicketTranscript,
       ticket_add_user: handleTicketAddUser,
       ticket_remove_user: handleTicketRemoveUser,
       ticket_rate: handleTicketRate,
@@ -165,6 +165,56 @@ async function handleTicketClaim(interaction, client) {
     content: `<@${claimed.userId}> — this ticket is now being handled by <@${interaction.user.id}>. AI automation is paused while staff is handling the conversation.`,
     allowedMentions: { users: [claimed.userId, interaction.user.id] },
   });
+}
+
+async function handleTicketTranscript(interaction, client) {
+  const ticketId = interaction.customId.replace("ticket_transcript_", "");
+  const ticket = await client.db.getTicket(ticketId);
+
+  if (!ticket) {
+    return interaction.reply({
+      components: [TicketUI.buildError("Ticket Not Found", "This ticket could not be located.")],
+      flags: TicketUI.getEphemeralFlags(),
+    });
+  }
+
+  const canView = await checkPermissions(interaction, client, ticket, "transcript");
+  if (!canView) {
+    return interaction.reply({
+      components: [TicketUI.buildError("Staff Only", "Only authorized support staff can generate a transcript.")],
+      flags: TicketUI.getEphemeralFlags(),
+    });
+  }
+
+  await interaction.deferReply({ flags: TicketUI.getEphemeralFlags() });
+
+  try {
+    const attachment = await discordTranscripts.createTranscript(interaction.channel, {
+      limit: -1,
+      filename: `helzerx-${ticket.ticketId}.html`,
+      saveImages: false,
+      poweredBy: false,
+      footerText: "HelzerX Studio • Ticket Transcript",
+    });
+
+    await interaction.editReply({
+      components: [TicketUI.buildSuccess(
+        "Transcript Ready",
+        "The complete ticket transcript has been generated below. It includes the conversation and ticket history."
+      )],
+      files: [attachment],
+      flags: TicketUI.getEphemeralFlags(),
+    });
+  } catch (error) {
+    logger.error("Transcript", `Failed for ${ticket.ticketId}`, error);
+    await interaction.editReply({
+      components: [TicketUI.buildError(
+        "Transcript Failed",
+        "I couldn't generate the transcript right now. Please try again or ask another staff member."
+      )],
+      flags: TicketUI.getFlags(),
+    });
+  }
 }
 
 async function handleTicketUnclaim(interaction, client) {
