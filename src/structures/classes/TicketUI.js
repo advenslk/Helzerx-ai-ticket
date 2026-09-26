@@ -54,7 +54,7 @@ export class TicketUI {
         ));
       }
 
-      const buttons = [new ButtonBuilder().setCustomId(`ticket_close_${ticket.ticketId}`).setEmoji(emoji.lock).setLabel("Close").setStyle(ButtonStyle.Danger)];
+      const buttons = [new ButtonBuilder().setCustomId(`ticket_close_${ticket.ticketId}`).setEmoji(emoji.lock).setLabel("Close").setStyle(ButtonStyle.Danger),\n        new ButtonBuilder().setCustomId(`ticket_transcript_${ticket.ticketId}`).setEmoji("📄").setLabel("Transcript").setStyle(ButtonStyle.Secondary)];
       if (ticket.claimedBy) {
         buttons.push(new ButtonBuilder().setCustomId(`ticket_unclaim_${ticket.ticketId}`).setEmoji("↩️").setLabel("Unclaim").setStyle(ButtonStyle.Secondary));
       } else {
